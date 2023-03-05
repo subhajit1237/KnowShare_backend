@@ -16,8 +16,9 @@ app.get("/", (req,res) => {
     res.json({ message: "Welcome to KnowShare."});
 });
 
-const db = require("./app/models");
-db.sequelize.sync();
+// const db = require("./app/models");
+// db.sequelize.sync();
+
 // const postgres = require('pg');
 // require('dotenv').config();
 

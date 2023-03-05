@@ -6,7 +6,7 @@ const sequelize = new Sequelize(
     config.USER,
     config.PASSWORD,
     {
-        host: congif.HOST,
+        host: config.HOST,
         dialect: config.dialect,
         operatorsAliases: false,
 
@@ -36,3 +36,7 @@ db.role.belongsToMany(db.role, {
 db.ROLES = ["user","admin","moderator"];
 
 module.exports = db;
+
+const app = express();
+app.use();
+
