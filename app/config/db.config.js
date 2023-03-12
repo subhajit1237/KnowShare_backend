@@ -1,3 +1,4 @@
+const postgres = require('pg');
 require('dotenv').config();
 module.exports = {
     HOST: process.PGHOST,
