@@ -1,47 +1,46 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("cors");
 
 const app = express();
 
-let corsOptions = {
-    origin: "http://localhost:8081"
+var corsOptions = {
+  origin: "http://localhost:8081"
 };
 
 app.use(cors(corsOptions));
+
+// parse requests of content-type - application/json
 app.use(bodyParser.json());
+
+// parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get("/", (req,res) => {
-    res.json({ message: "Welcome to KnowShare."});
-});
-
-// const db = require("./app/models");
-// db.sequelize.sync();
-
-const postgres = require('pg');
-require('dotenv').config();
-
-const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID } = process.env;
-const URL = `postgres://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}?options=project%3D${ENDPOINT_ID}`;
-
-const sql = postgres(URL, { ssl: 'require' });
-
-async function getPgVersion() {
-  const result = await sql`select version()`;
-  console.log(result);
-}
-
-getPgVersion();
-
+// database
 const db = require("./app/models");
 const Role = db.role;
 
+// db.sequelize.sync();
+// force: true will drop the table if it already exists
 db.sequelize.sync({force: true}).then(() => {
-  console.log('Drop and Resync Db');
+  console.log('Drop and Resync Database with { force: true }');
   initial();
 });
 
+// simple route
+app.get("/", (req, res) => {
+  res.json({ message: "Welcome to bezkoder application." });
+});
+
+// routes
+require('./app/routes/auth.routes')(app);
+require('./app/routes/user.routes')(app);
+
+// set port, listen for requests
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}.`);
+});
 
 function initial() {
   Role.create({
@@ -59,12 +58,3 @@ function initial() {
     name: "admin"
   });
 }
-
-// routes
-require('./app/routes/auth.routes')(app);
-require('./app/routes/user.routes')(app);
-
-const port = process.env.PORT || 8080;
-app.listen(port, () => {
-    console.log((`Server is running on port ${port}`));
-})
